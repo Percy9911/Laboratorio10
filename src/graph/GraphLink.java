@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
+import java.util.Stack;
 
 import listlinked.ListLinked;
 
@@ -152,6 +153,10 @@ public class GraphLink<E> {
         return BFS(firstVertex).size() == graph.size();
     }
 
+    public boolean isConexo() {
+        return isConnected();
+    }
+
     public ArrayList<E> shortPath(E origin, E destination) {
         ArrayList<E> result = new ArrayList<>();
 
@@ -225,6 +230,17 @@ public class GraphLink<E> {
 
         for (E data : path) {
             result.add(data);
+        }
+
+        return result;
+    }
+
+    public Stack<E> Dijsktra(E origin, E destination) {
+        Stack<E> result = new Stack<>();
+        ArrayList<E> path = shortPath(origin, destination);
+
+        for (E data : path) {
+            result.push(data);
         }
 
         return result;
