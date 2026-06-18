@@ -1,8 +1,11 @@
 package graph;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 
@@ -148,6 +151,84 @@ public class GraphLink<E> {
         return BFS(firstVertex).size() == graph.size();
     }
 
+    public ListLinked<E> shortPath(E origin, E destination) {
+        ListLinked<E> result = new ListLinked<>();
+
+        if (findVertex(origin) == null || findVertex(destination) == null) {
+            return result;
+        }
+
+        Map<E, Integer> distances = new HashMap<>();
+        Map<E, E> previous = new HashMap<>();
+        Set<E> visited = new HashSet<>();
+        PriorityQueue<PathNode<E>> queue = new PriorityQueue<>(
+                (a, b) -> Integer.compare(a.getDistance(), b.getDistance())
+        );
+
+        for (int i = 0; i < graph.size(); i++) {
+            distances.put(graph.get(i).getVertex().getData(), Integer.MAX_VALUE);
+        }
+
+        distances.put(origin, 0);
+        queue.add(new PathNode<>(origin, 0));
+
+        while (!queue.isEmpty()) {
+            PathNode<E> pathNode = queue.poll();
+            E currentData = pathNode.getData();
+
+            if (visited.contains(currentData)) {
+                continue;
+            }
+
+            visited.add(currentData);
+
+            if (Objects.equals(currentData, destination)) {
+                break;
+            }
+
+            AdjList<E> current = findVertex(currentData);
+
+            for (int i = 0; i < current.getEdges().size(); i++) {
+                Edge<E> edge = current.getEdges().get(i);
+                E neighborData = edge.getDestination().getData();
+                int newDistance = distances.get(currentData) + edge.getWeight();
+
+                if (newDistance < distances.get(neighborData)) {
+                    distances.put(neighborData, newDistance);
+                    previous.put(neighborData, currentData);
+                    queue.add(new PathNode<>(neighborData, newDistance));
+                }
+            }
+        }
+
+        if (distances.get(destination) == Integer.MAX_VALUE) {
+            return result;
+        }
+
+        LinkedList<E> path = new LinkedList<>();
+        E current = destination;
+
+        while (current != null) {
+            path.addFirst(current);
+
+            if (Objects.equals(current, origin)) {
+                break;
+            }
+
+            current = previous.get(current);
+        }
+
+        if (path.isEmpty() || !Objects.equals(path.getFirst(), origin)) {
+            return result;
+        }
+
+        for (E data : path) {
+            result.addLast(data);
+        }
+
+        return result;
+    }
+
     private void DFS(AdjList<E> current, Set<E> visited, ListLinked<E> result) {
         E currentData = current.getVertex().getData();
 
@@ -186,6 +267,24 @@ public class GraphLink<E> {
         }
 
         return false;
+    }
+
+    private static class PathNode<T> {
+        private T data;
+        private int distance;
+
+        public PathNode(T data, int distance) {
+            this.data = data;
+            this.distance = distance;
+        }
+
+        public T getData() {
+            return data;
+        }
+
+        public int getDistance() {
+            return distance;
+        }
     }
     
     @Override
