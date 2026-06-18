@@ -47,6 +47,18 @@ public class GraphLink<E> {
         v2.getEdges().addLast(new Edge<>(v1.getVertex()));
     }
 
+    public void insertEdgeWeight(E origin, E destination, int weight) {
+        AdjList<E> v1 = findVertex(origin);
+        AdjList<E> v2 = findVertex(destination);
+
+        if (v1 == null || v2 == null || hasEdge(v1, destination)) {
+            return;
+        }
+
+        v1.getEdges().addLast(new Edge<>(v2.getVertex(), weight));
+        v2.getEdges().addLast(new Edge<>(v1.getVertex(), weight));
+    }
+
     public boolean removeVertex(E data) {
         AdjList<E> vertexToRemove = findVertex(data);
 
@@ -185,7 +197,14 @@ public class GraphLink<E> {
             sb.append(adj.getVertex()).append(" -> ");
 
             for (int j = 0; j < adj.getEdges().size(); j++) {
-                sb.append(adj.getEdges().get(j)).append(" ");
+                Edge<E> edge = adj.getEdges().get(j);
+                sb.append(edge);
+
+                if (edge.getWeight() != 1) {
+                    sb.append("(").append(edge.getWeight()).append(")");
+                }
+
+                sb.append(" ");
             }
 
             sb.append("\n");
