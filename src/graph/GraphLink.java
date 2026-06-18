@@ -1,5 +1,6 @@
 package graph;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -151,8 +152,8 @@ public class GraphLink<E> {
         return BFS(firstVertex).size() == graph.size();
     }
 
-    public ListLinked<E> shortPath(E origin, E destination) {
-        ListLinked<E> result = new ListLinked<>();
+    public ArrayList<E> shortPath(E origin, E destination) {
+        ArrayList<E> result = new ArrayList<>();
 
         if (findVertex(origin) == null || findVertex(destination) == null) {
             return result;
@@ -223,7 +224,7 @@ public class GraphLink<E> {
         }
 
         for (E data : path) {
-            result.addLast(data);
+            result.add(data);
         }
 
         return result;
